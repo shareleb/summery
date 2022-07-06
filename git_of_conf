@@ -1,0 +1,14 @@
+git配置
+  git config --global user.name "<your mis id>"
+  git config --global user.email "email" 
+  
+配置公钥:
+  在机器上执行 : ssh-keygen -t rsa
+  获取已生成的公钥: cat ~/.ssh/id_rsa.pub
+  
+  
+  
+  
+  参考：
+    https://blog.csdn.net/jiaming917/article/details/123419756
+    https://blog.csdn.net/shaoming314/article/details/122641005
