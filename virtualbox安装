@@ -1,0 +1,6 @@
+1. 去官网下载virtualbox  https://www.virtualbox.org/wiki/Downloads
+2. 去官网下载debian镜像   https://www.debian.org/download
+3. 安装virtualbox。
+4. 去存储里安装系统镜像。
+5. 网络改为NAT,   0.0.0.0 2222 子ip 22
+6. 本机可以ssh远程连接   ssh user@127.0.0.1 -p 2222
