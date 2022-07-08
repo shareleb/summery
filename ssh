@@ -1,1 +1,24 @@
 
+ssh是安全加密协议，主要用于远程主机登陆。
+首先加密算法有对称加密算法和非对称加密算法。非对称加密算法有rsa，有公钥私匙之分。 HD是密钥交换算法，主要用与在非安全信道安全的交换密钥。
+ssh连接有两部分：
+  主机连接，
+  用户鉴权
+  
+ 1.首先客户端和服务端协商同意ssh版本，然后服务端发送公钥，证书，支持加密，参数的方式。
+ 2.客户端确认连接后会根据传来的参数进行HD，算出一个数后，用公钥匙加密传递给服务端。 然后服务端也计算一个数给客户端（HD) ，然后双方得到一个对称加密算法，然后就用这个对称加密算法进行加密
+   传输。
+ 
+ 3. Public/Private Key，就是指用来身份鉴权的 Authorized Key。客户端拥有 Private 和 Public Key，提前将 Public Key 放到服务端用于登录。
+ 4. 客户端发送自己的pubilc key给服务端，如果服务端发现有这个publickey 则进行下一步， 然后服务端会生产一串字符串，用md5和public key进行加密， 客户端收到后也会解析出，然后用sesson
+  key 来进行加密，发送给服务端， 然后服务端也用相同的md5和sesson来计算判断是否一致。
+  
+  
+  SSH 分为两大步，第一步是客户端和服务端建立连接，最终生成双方都一致的 Session Key。第二步使用 Authorized Key 进行登录，登录过程使用 Public/Private Key 验证身份。连接建立完成后，在通讯过程中使用 Session Key 对信息进行加密解密。
+
+
+作者：leancloud
+链接：https://zhuanlan.zhihu.com/p/108161141
+https://blog.csdn.net/nice_wen/article/details/87996526
+https://blog.csdn.net/qinwuxian19891211/article/details/124075844
+https://blog.csdn.net/u013896064/article/details/99959809?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1-99959809-blog-92130131.pc_relevant_aa2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1-99959809-blog-92130131.pc_relevant_aa2&utm_relevant_index=2
