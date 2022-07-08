@@ -22,3 +22,48 @@ ssh连接有两部分：
 https://blog.csdn.net/nice_wen/article/details/87996526
 https://blog.csdn.net/qinwuxian19891211/article/details/124075844
 https://blog.csdn.net/u013896064/article/details/99959809?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1-99959809-blog-92130131.pc_relevant_aa2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1-99959809-blog-92130131.pc_relevant_aa2&utm_relevant_index=2
+
+
+ssh的工具。
+  首先ssh分为客户端和服务端。 apt： ubuntu ,debian
+  如果远程的服务端还没安装ssh:
+    apt  install openssl-server  -y
+    systemctl status ssh 
+    # 如果你的防火墙开启了，使用下面语句
+    sudo ufw allow ssh
+    
+   连接时基本使用：
+     ssh  用户名@ip -p 端口
+     
+     
+   类unix系统（mac或者linux）可以直接编辑~/.ssh/config这个文件，
+        Host hostB
+    HostName 123.456.789.000
+    Port 5678
+    User root
+    IdentityFile ~\.ssh\id_rsa
+    
+    
+ 免密码登陆：
+    把本地公钥拷贝到远程服务器上，就不需要每次登录使用密码了
+    ssh-keygen -t rsa
+    cat ~/.ssh/id_rsa.pub
+   
+   ssh-copy-id Host  可以将本地的公钥copy到远程。 将本地公钥拷贝到远程名为Host用户下，也就是/home/xxx/.ssh/authorized_keys里
+   
+  
+ scp:
+    scp 是 linux 系统下基于 ssh 登陆进行安全的远程文件拷贝命令。 
+    scp -r local_path l1:~
+    
+  
+ ssh 做代理
+  
+  
+  
+  
+  
+  
+   
+    
+
