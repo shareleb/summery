@@ -1,0 +1,6 @@
+bazle是什么？
+  bazel是一个开源的构建和测试工具
+bazle工程下的WORKSPACE？
+  bazel工程根目录下需要一个WORKSPACE文件，这个文件名必须是WORKSPACE. WORKSPACE下可以放包里面可以寻找source code 和 BUILD文件。 这个BUILD文件就是告诉如何编译构建这些source code
+ WORKSPACE文件可以为
+ 
