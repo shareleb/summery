@@ -2,5 +2,144 @@ bazle是什么？
   bazel是一个开源的构建和测试工具
 bazle工程下的WORKSPACE？
   bazel工程根目录下需要一个WORKSPACE文件，这个文件名必须是WORKSPACE. WORKSPACE下可以放包里面可以寻找source code 和 BUILD文件。 这个BUILD文件就是告诉如何编译构建这些source code
- WORKSPACE文件可以为
+ WORKSPACE文件可以为空。也可以包含一些需要的外部依赖。  用于告诉如何获取其他项目的源代码。 主项目中的BUILD文件可以依赖这些外部目标，只需要使用WORKSPACE文件中的名称即可
  
+ 例如 
+ /
+  home/
+    user/
+      project1/
+        WORKSPACE
+        BUILD
+        srcs/
+          ...
+      project2/
+        WORKSPACE
+        BUILD
+        my-libs/ 
+  有两个项目，如果project1想要依赖于/home/user/project2/BUILD中定义的目标， 例如 ：foo, 
+  则 /home/user/project1/BUILD 中的目标可能依赖于 @project2//:foo。  @仓库名//包名：目标名。
+  借助WORKSPACE 可以依赖从文件系统的其他部分或互联网上下载的目标，它使用与BUILD中的语法一致，但允许一组代码库规则， bazle 自带内置代码库规则和嵌入式 Starlark 代码库规则
+  还可以自己编写更复杂的规则。
+  
+  支持的外部依赖项类型
+    1.对其他bazel项目的依赖。
+          如果project1 需要依赖本地的project2,
+            local_repository(
+             name = "pro2",
+             path = "/path/to/project2",      
+            )
+        
+ 
+ 例子：
+    work1:  里面有jsoncpp so
+       -WORKSPACE
+       -head
+          -BUILD
+          -include
+          -lib64
+          -share
+                      cc_library(
+                        name = "jsoncpp",
+                        srcs = glob(["lib*/lib*.so*"]),
+                        hdrs = glob(["include/jsoncpp/json/*.h"]),
+                        includes = ["include", "include/jsoncpp"],
+                        visibility = ["//visibility:public"],
+                      )
+    
+    work2 :
+       -WORKSPACE 
+          local_repository(
+          name = "work1",
+          path = "/home/user/work1",
+          )    
+      -head2
+        -BUILD 
+              cc_binary(
+                  name = "main",
+                  srcs = glob(["main.cpp"]),
+                  deps = [
+                     "@work1//head:jsoncpp",
+                  ] 
+               )
+        -main.cpp
+
+bzael build //head2:main
+
+
+2.依赖类型为非bazel项目
+  带 new_ 前缀的规则 new_local_repository 允许根据不使用bazel的项目创建目标
+   project1 依赖project2  （非bazel项目）
+   需要在WORKSPACE 内
+      new_local_repository(
+        name = "project2",
+        path = "path/to/project2",
+        build_file = "project2.BUILD",
+      )
+      
+    build_file表示在当前项目上叠加的BUILD文件。
+        cc_library(
+          name = "pro",
+          srcs = glob(["**"]),
+          visibility = ["//visibility:public"],
+        )
+     然后可以依赖项目的BUILD文件中的@project2//:pro
+
+ 
+ 
+ 
+ Bazel 只会读取 WORKSPACE 文件中列出的依赖项。如果您的项目 (A) 依赖于另一个项目 (B)，而该项目在其 WORKSPACE 文件中列出对第三个项目 (C) 的依赖关系
+ ，则必须将 B 和 C 都添加到项目的 WORKSPACE 文件中。此要求可以调整 WORKSPACE 文件大小，但会限制一个库包含 1.0 版的 C 和另一个包含 2.0 版的 C 的可能性。
+ 
+ 
+ 默认情况下，只有当外部依赖项的定义发生变化时，Bazel 才会重新下载它们。对定义中引用的文件（如补丁程序或 BUILD 文件）的更改也会通过 Bazel 考虑在内。
+ 要强制重新下载，请使用 bazel sync。
+ 
+
+外部依赖项全部下载到输出库中的子目录 external 下的目录中。如果是本地代码库，则可以在其中创建符号链接，而不是创建新目录。您可以通过运行以下命令查看 external 目录
+  ls $(bazel info output_base)/external
+
+
+
+添加对预编译库的依赖（例如头文件和so） 
+    封装在cc_library中
+      cc_library(
+          name = "so",
+          srcs = ["mylib.so"],
+          hdrs = ["mylib.h"],
+       )
+
+  
+  
+  
+  
+  cc_binary(
+    name = "",
+    deps = [ ],
+    srcs = [],
+  
+  )
+  name : 目标的名称
+  deps : 要链接到二进制目标的其他库列表 （可以是cc_library或objc_library目标）
+  srcs : 为创建目标而处理的c/c++文件， 这些文件是源文件或头文件。
+    所有 #included 文件都必须在此规则的 srcs 属性或引用 cc_library() 的 hdrs 属性中 推荐的样式是与某个库关联的头文件列在库的 hdrs 属性中，而与此规则关联的任何剩余头文件要在 srcs 中列出。
+  copts: 将编译选项添加到c++ 编译命令中，
+  defines	 要添加到编译行的定义列 类似于-D
+  includes : 要添加到编译行中的包含目录。 与 COPTS 不同，这些标记是为此规则以及依赖于此规则的每条规则添加的
+
+
+
+允许导入用户预编译的库
+cc_import(
+  name = "",
+  hdrs = [""],
+  static_library = "libmylib.a",
+)
+cc_import(
+  name = "",
+  hdrs = [""],
+  shared_library = "libmylib.so",
+
+_
+
+  
