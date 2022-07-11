@@ -1,0 +1,6 @@
+Json: Jsoncpp. jason
+boost
+google : gflag gtest gmock protobuf
+faiss 向量检索库。
+gpreftools : 性能测试工具。
+libcurl : 
