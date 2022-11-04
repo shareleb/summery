@@ -1,0 +1,25 @@
+#include<sys/select.h>
+int select(int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, struct timeval* timeout);
+
+参数：
+  nfds:  指定被监听的文件描述符的总数， 通常设置为select监听的所有文件描述符的最大值+1，（文件描述符从0计数）
+  readfds, writefds, exceptfds分别为可读、可写、和异常等事件对应的文件描述符集合。  select调用返回时，内核将修改它们来通知应用程序哪些文件描述符已经就绪。
+  timeout 为超时时间。 内核也可以修改它告诉应用程序select等待了多久，  调用失败时timeout值不确定。 如果为0则会立即返回，如果传NULL则select将一直阻塞，直到某个文件描述符就绪。
+返回值：
+  select成功时返回就绪（可读/可写/异常）文件描述符的总数，如果超时时间内没有任何文件描述符就绪，select将返回0， select 失败时返回-1并设置errno,如果再select等待期间，
+  程序接受信号则select立即返回-1，并设置error为EINTR;
+
+exdata:
+  fd_set结构体仅包含一个整型数组，该数组的每个元素的每一位标记一个文件描述符，fd_set能容纳的文件描述符的数量由FD_SETSIZE指定，限制了select能同时处理的文件描述符的总量。
+  
+  
+#include<sys/select.h>
+FD_ZERO(fd_set* fdset);                清除fdset的所有位
+FD_SET(int fd, fd_set* fdset);         设置fdset的位fd
+FD_CLR(int fd, fd_set* fdset);         清除fdset的位fd
+int FD_ISSET(int fd, fd_set* fdset);   测试fdset的位fd是否被设置。
+
+文件描述符就绪条件：
+  SOCKET可读：
+    socket内核接收缓冲区中的字节数大于或等于其低水位标SO_RCVLOWAT, 此时可以无阻塞地读该socket，并且读操作返回的字节数大于0；
+    so_rcvlowat
