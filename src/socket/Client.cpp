@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     perror("connect error");
   }
   char buff[MAX_SIZE];
-  memset(buff, MAX_SIZE, 0);
+  memset(buff, 0, MAX_SIZE);
   while (true) {
     std::string message;
     std::cin >> message;
@@ -44,13 +44,14 @@ int main(int argc, char *argv[]) {
     }
     std::cout << "send message size:" << size << "[" << message << "]"
               << std::endl;
-    memset(buff, MAX_SIZE, 0);
+    memset(buff, 0, MAX_SIZE);
     size = read(fd, buff, MAX_SIZE);
     if (size == 0) {
       perror("service close");
     } else if (size < 0) {
       perror("read error");
     }
+    buff[size] = 0;
     std::cout << "size:" << size << "[" << buff << "]" << std::endl;
   }
   return 0;

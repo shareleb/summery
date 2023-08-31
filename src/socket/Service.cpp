@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
   }
   char buf[MAX_SIZE];
   for (;;) {
-    memset(buf, MAX_SIZE, 0);
+    memset(buf, 0, MAX_SIZE);
     int size = read(fd, buf, MAX_SIZE);
     if (size == 0) {
       perror("client close");
